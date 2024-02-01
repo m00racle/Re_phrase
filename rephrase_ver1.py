@@ -12,8 +12,11 @@ load_dotenv()
 
 class Tutor:
     """  
-    class teacher which will interact with the student (user)
-
+    class Tutor which will interact with the student (user)
+    it will provides :
+    definitions
+    grades the paraphrases
+    asked questions to test student understandings
     """
 
     def __init__(self) -> None:
@@ -28,25 +31,51 @@ class Tutor:
         self.ratings = []
         self.questions = []
 
-    def getCompletion(self, msg):
+    def getCompletion(self, msg, **tunes):
         """  
         get the answer form chatGPT on the terms passed as argument
         terms: String = keyword to get the definition from
         return : String = response message content on the definition of the terms
         """
-        response = self.client.completions.create(
-                    model="gpt-3.5-turbo-instruct",
-                    message=msg,
-                    temperature=1,
-                    max_tokens=256,
-                    top_p=1,
-                    frequency_penalty=0,
-                    presence_penalty=0
+        params = {
+            "temperature" : 0.5,
+            "max_tokens" : 200,
+            "top_p" : 1,
+            "frequency_penalty" : 0,
+            "presence_penalty" : 0
+        }
+
+        for k in tunes:
+            if k in params: params[k] = tunes[k]
+
+        # debug
+        # print(f"params= {params}")
+
+        response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=msg,
+                    temperature=params['temperature'],
+                    max_tokens=params['max_tokens'],
+                    top_p=params['top_p'],
+                    frequency_penalty=params['frequency_penalty'],
+                    presence_penalty=params['presence_penalty']
                     )
-        # TODO: decouple the response params
+        
         return response.choices[0].message.content
     
-    def giveDefinition(self, question):
+    def messenger(self, content):
+        """  
+        message maker
+
+        Parameters:
+        content: String = the completion message content
+        """
+        return [
+            {"role": "system", "content": self.role_content},
+            {"role": "user", "content": content}
+        ]
+    
+    def giveDefinition(self, topic, question):
         """  
         get definition from posted question 
         Parameters:
@@ -54,7 +83,14 @@ class Tutor:
 
         return : string = definition for the questiong
         """
-        pass # TODO: 
+        messages = self.messenger('dari topik: ' + topic +' jelaskan secara singkat: ' + question)
+        print(f"messages: {messages}")
+        definition = self.getCompletion(messages)
+        self.definitions.append(definition)
+        return definition
+    
+    def getDefinintions(self):
+        return self.definitions
 
     def giveRating(self, answer):
         """  
@@ -66,4 +102,16 @@ class Tutor:
             return : int = score of the answer
         """
         pass # TODO:
-    
+
+
+def run_test():
+    """  
+    Running manual test on the project
+    This is useful to grasp context on how the program is running
+    """
+    tutor = Tutor()
+    print(f'trial definisi Energi:\n {tutor.giveDefinition("Fisika", "Energi")}')
+    print(tutor.getDefinintions())
+
+if __name__ == '__main__':
+    run_test()
