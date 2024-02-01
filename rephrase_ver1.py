@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 # load the variables in the .env file
 load_dotenv()
 
-class Teacher:
+class Tutor:
     """  
     class teacher which will interact with the student (user)
 
@@ -45,4 +45,25 @@ class Teacher:
                     )
         # TODO: decouple the response params
         return response.choices[0].message.content
+    
+    def giveDefinition(self, question):
+        """  
+        get definition from posted question 
+        Parameters:
+        question : string = Question from the 
+
+        return : string = definition for the questiong
+        """
+        pass # TODO: 
+
+    def giveRating(self, answer):
+        """  
+            Give rating from the paraphrasing or answer
+
+            Parameter:
+            answer: String = the answer posted to tutor
+
+            return : int = score of the answer
+        """
+        pass # TODO:
     
