@@ -63,7 +63,7 @@ class Tutor:
         
         return response.choices[0].message.content
     
-    def messenger(self, content):
+    def messenger(self, content:str):
         """  
         message maker
 
@@ -85,7 +85,7 @@ class Tutor:
         """
         messages = self.messenger('dari topik: ' + topic +' jelaskan secara singkat: ' + question)
         print(f"messages: {messages}")
-        definition = self.getCompletion(messages)
+        definition = self.getCompletion(messages, temperature=0.1)
         self.definitions.append(definition)
         return definition
     
@@ -95,13 +95,22 @@ class Tutor:
     def giveRating(self, answer):
         """  
             Give rating from the paraphrasing or answer
+            Apabila paraphrasing terlalu mirip aslinya juga tidak baik
+            apabila terlalu jauh dari konsep juga tidak baik
 
             Parameter:
             answer: String = the answer posted to tutor
 
             return : int = score of the answer
         """
-        pass # TODO:
+        constraints = [
+            " apabila uraian semakin dekat isinya ke definisi maka nilainya semakin berkurang",
+            " apabila uraian semakin jauh isinya dari definisi maka nilainya semakin berkurang"
+        ]
+        definition = self.getDefinintions()[-1]
+        draft = "ketika ada definisi: " + definition + " kemudian untuk melatih pemahaman siswa memberikan uraian singkat menggunakan bahasa mereka sendiri sebagai berikut: " + answer + ", berikan penilaian berupa angka tanpa uraian antara 1 hingga 10 terhadap uraian tadi dengan batasan sebagai berikut: " + constraints[0] + constraints[1]
+        content = self.messenger(draft)
+        rating = self.getCompletion(content, temperature=1, max_tokens=1)
 
 
 def run_test():
@@ -112,6 +121,8 @@ def run_test():
     tutor = Tutor()
     print(f'trial definisi Energi:\n {tutor.giveDefinition("Fisika", "Energi")}')
     print(tutor.getDefinintions())
+    uraian = "energi pada dasarnya apa yang bisa membuat dan atau dihasilkan ketika ada yang berubah dalam suatu sistem"
+    print(f"penilaian atas ulasan: {tutor.giveRating(uraian)}")
 
 if __name__ == '__main__':
     run_test()
