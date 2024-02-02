@@ -110,7 +110,8 @@ class Tutor:
         definition = self.getDefinintions()[-1]
         draft = "ketika ada definisi: " + definition + " kemudian untuk melatih pemahaman siswa memberikan uraian singkat menggunakan bahasa mereka sendiri sebagai berikut: " + answer + ", berikan penilaian berupa angka tanpa uraian antara 1 hingga 10 terhadap uraian tadi dengan batasan sebagai berikut: " + constraints[0] + constraints[1]
         content = self.messenger(draft)
-        rating = self.getCompletion(content, temperature=1, max_tokens=1)
+        rating = self.getCompletion(content, temperature=1, max_tokens=10)
+        return rating
 
 
 def run_test():
@@ -119,10 +120,10 @@ def run_test():
     This is useful to grasp context on how the program is running
     """
     tutor = Tutor()
-    print(f'trial definisi Energi:\n {tutor.giveDefinition("Fisika", "Energi")}')
+    print(f'\ntrial definisi Energi:\n {tutor.giveDefinition("Fisika", "Energi")}')
     print(tutor.getDefinintions())
     uraian = "energi pada dasarnya apa yang bisa membuat dan atau dihasilkan ketika ada yang berubah dalam suatu sistem"
-    print(f"penilaian atas ulasan: {tutor.giveRating(uraian)}")
+    print(f"\npenilaian atas ulasan: {tutor.giveRating(uraian)}")
 
 if __name__ == '__main__':
     run_test()
