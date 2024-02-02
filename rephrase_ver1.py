@@ -84,7 +84,7 @@ class Tutor:
         return : string = definition for the questiong
         """
         messages = self.messenger('dari topik: ' + topic +' jelaskan secara singkat: ' + question)
-        print(f"messages: {messages}")
+        print(f"\nmessages: {messages}")
         definition = self.getCompletion(messages, temperature=0.1)
         self.definitions.append(definition)
         return definition
@@ -110,8 +110,9 @@ class Tutor:
         definition = self.getDefinintions()[-1]
         draft = "ketika ada definisi: " + definition + " kemudian untuk melatih pemahaman siswa memberikan uraian singkat menggunakan bahasa mereka sendiri sebagai berikut: " + answer + ", berikan penilaian berupa angka tanpa uraian antara 1 hingga 10 terhadap uraian tadi dengan batasan sebagai berikut: " + constraints[0] + constraints[1]
         content = self.messenger(draft)
-        rating = self.getCompletion(content, temperature=1, max_tokens=10)
-        return rating
+        rating = self.getCompletion(content, temperature=0, max_tokens=100)
+        print(f"\nresponse rating: {rating}")
+        return [int(s) for s in rating.split() if s.isdigit()]
 
 
 def run_test():
